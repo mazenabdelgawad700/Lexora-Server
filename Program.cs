@@ -1,17 +1,27 @@
+using Lexora.DataAccess.Context;
+using Lexora.DataAccess.Entities;
+using Lexora.Repositories;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+var connectionString = builder.Configuration.GetConnectionString("LexoraDb");
+
+builder.Services.AddDbContext<LexoraDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
+// Regsiter Repositories to DI
+builder.Services.AddTransient<IVocabularyEntryRepository, VocabularyEntryRepository>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+  app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();

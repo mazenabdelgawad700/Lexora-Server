@@ -1,0 +1,6 @@
+@Lexora_HostAddress = http://localhost:5078
+
+GET {{Lexora_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

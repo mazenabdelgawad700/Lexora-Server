@@ -1,4 +1,5 @@
 using Lexora.Base;
+using Lexora.DataAccess.Context;
 using Lexora.DataAccess.Entities;
 using Lexora.DTOs;
 using Microsoft.EntityFrameworkCore;
@@ -7,11 +8,11 @@ namespace Lexora.Repositories;
 
 public class VocabularyEntryRepository : IVocabularyEntryRepository
 {
-  private readonly DbContext _dbContext;
+  private readonly LexoraDbContext _dbContext;
   private readonly DbSet<VocabularyEntry> _vocabularyEntrySet;
   // TODO:: add logging
 
-  public VocabularyEntryRepository(DbContext dbContext)
+  public VocabularyEntryRepository(LexoraDbContext dbContext)
   {
     _dbContext = dbContext;
     _vocabularyEntrySet = _dbContext.Set<VocabularyEntry>();
@@ -38,7 +39,7 @@ public class VocabularyEntryRepository : IVocabularyEntryRepository
 
       return ReturnBaseHandler.Success("Vocabulary deleted successffully");
     }
-    catch (Exception ex)
+    catch (Exception)
     {
       // TODO:: add logging
       return ReturnBaseHandler.Failed<string>("Failed to delete vocabulary");
@@ -58,7 +59,7 @@ public class VocabularyEntryRepository : IVocabularyEntryRepository
 
       return ReturnBaseHandler.Success(entities);
     }
-    catch (Exception ex)
+    catch (Exception)
     {
       // TODO:: add logging
       return ReturnBaseHandler.Failed<IQueryable<VocabularyEntry>>("Failed to get vocabularies");
@@ -75,7 +76,7 @@ public class VocabularyEntryRepository : IVocabularyEntryRepository
 
       return ReturnBaseHandler.Success(entity);
     }
-    catch (Exception ex)
+    catch (Exception)
     {
       // TODO:: add logging
       return ReturnBaseHandler.Failed<VocabularyEntry>("Failed to get vocabulary");
@@ -97,7 +98,7 @@ public class VocabularyEntryRepository : IVocabularyEntryRepository
 
       return ReturnBaseHandler.Success("Vocabulary added successffully");
     }
-    catch (Exception ex)
+    catch (Exception)
     {
       // TODO:: add logging
       return ReturnBaseHandler.Failed<string>("Failed to add vocabulary, is your input valid?");
@@ -114,13 +115,13 @@ public class VocabularyEntryRepository : IVocabularyEntryRepository
 
       return ReturnBaseHandler.Success(vocabulariesResult);
     }
-    catch (Exception ex)
+    catch (Exception)
     {
       // TODO:: add logging
       return ReturnBaseHandler.Failed<IQueryable<VocabularyEntry>>("Failed to get vocabularies");
     }
   }
-  public async Task<ReturnBase<IQueryable<VocabularyEntry>>> SearchVocabularyEntryByWordAsync(SearchVocabularyEntryDtoByDefinition searchDto)
+  public async Task<ReturnBase<IQueryable<VocabularyEntry>>> SearchVocabularyEntryByDefinitionAsync(SearchVocabularyEntryDtoByDefinition searchDto)
   {
     try
     {
@@ -131,7 +132,27 @@ public class VocabularyEntryRepository : IVocabularyEntryRepository
 
       return ReturnBaseHandler.Success(vocabulariesResult);
     }
-    catch (Exception ex)
+    catch (Exception)
+    {
+      // TODO:: add logging
+      return ReturnBaseHandler.Failed<IQueryable<VocabularyEntry>>("Failed to get vocabularies");
+    }
+  }
+  public async Task<ReturnBase<IQueryable<VocabularyEntry>>> SearchVocabularyEntryByExampleAsync(string searchQuery)
+  {
+    try
+    {
+      if (string.IsNullOrWhiteSpace(searchQuery))
+        return ReturnBaseHandler.Failed<IQueryable<VocabularyEntry>>("Search query cannot be empty");
+
+      var vocabulariesResult = _vocabularyEntrySet.Where(v => v.Example.Contains(searchQuery));
+
+      if (vocabulariesResult is null)
+        return ReturnBaseHandler.Failed<IQueryable<VocabularyEntry>>("Failed to get vocabularies");
+
+      return ReturnBaseHandler.Success(vocabulariesResult);
+    }
+    catch (Exception)
     {
       // TODO:: add logging
       return ReturnBaseHandler.Failed<IQueryable<VocabularyEntry>>("Failed to get vocabularies");
@@ -146,6 +167,11 @@ public class VocabularyEntryRepository : IVocabularyEntryRepository
       if (entity is null)
         return ReturnBaseHandler.Failed<string>($"Vocabulary: {entry.Word} is not exist?!, is not it deleted?");
 
+      entity.Word = entry.Word;
+      entity.Definition = entry.Definition;
+      entity.Example = entry.Example;
+      entity.UpdatedAt = DateTime.UtcNow;
+
       var updateResult = _vocabularyEntrySet.Update(entity);
 
       if (updateResult is null)
@@ -158,7 +184,7 @@ public class VocabularyEntryRepository : IVocabularyEntryRepository
 
       return ReturnBaseHandler.Success("Vocabulary updated successffully");
     }
-    catch (Exception ex)
+    catch (Exception)
     {
       // TODO:: add logging
       return ReturnBaseHandler.Failed<string>("Failed to update vocabulary, is your input valid?");

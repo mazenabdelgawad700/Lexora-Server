@@ -1,6 +1,6 @@
 using Lexora.DataAccess.Context;
-using Lexora.DataAccess.Entities;
 using Lexora.Repositories;
+using Lexora.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +16,9 @@ builder.Services.AddDbContext<LexoraDbContext>(options =>
 
 // Regsiter Repositories to DI
 builder.Services.AddTransient<IVocabularyEntryRepository, VocabularyEntryRepository>();
+
+// Register Services to DI
+builder.Services.AddTransient<IVocabularyEntryService, VocabularyEntryService>();
 
 var app = builder.Build();
 

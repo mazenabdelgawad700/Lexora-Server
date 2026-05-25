@@ -11,5 +11,6 @@ public interface IVocabularyEntryRepository
   public Task<ReturnBase<VocabularyEntry>> GetVocabularyEntryByIdAsync(GetVocabularyEntryByIdDto getDto);
   public Task<ReturnBase<IQueryable<VocabularyEntry>>> GetVocabularyEntriesPaginatedAsync(GetVocabularyEntriesPaginatedDto getDto);
   public Task<ReturnBase<IQueryable<VocabularyEntry>>> SearchVocabularyEntryByWordAsync(SearchVocabularyEntryDtoByWord searchDto);
-  public Task<ReturnBase<IQueryable<VocabularyEntry>>> SearchVocabularyEntryByWordAsync(SearchVocabularyEntryDtoByDefinition searchDto);
+  public Task<ReturnBase<IQueryable<VocabularyEntry>>> SearchVocabularyEntryByDefinitionAsync(SearchVocabularyEntryDtoByDefinition searchDto);
+  public Task<ReturnBase<IQueryable<VocabularyEntry>>> SearchVocabularyEntryByExampleAsync(string searchQuery);
 }

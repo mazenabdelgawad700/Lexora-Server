@@ -20,7 +20,6 @@ builder.Services.AddTransient<IVocabularyEntryRepository, VocabularyEntryReposit
 // Register Services to DI
 builder.Services.AddTransient<IVocabularyEntryService, VocabularyEntryService>();
 
-var app = builder.Build();
 
 string CORS = "_cors";
 builder.Services.AddCors(options =>
@@ -32,6 +31,8 @@ builder.Services.AddCors(options =>
                 policy.AllowAnyOrigin();
               });
 });
+
+var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {

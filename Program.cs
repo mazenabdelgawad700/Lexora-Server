@@ -22,12 +22,25 @@ builder.Services.AddTransient<IVocabularyEntryService, VocabularyEntryService>()
 
 var app = builder.Build();
 
+string CORS = "_cors";
+builder.Services.AddCors(options =>
+{
+  options.AddPolicy(name: CORS, policy =>
+              {
+                policy.AllowAnyHeader();
+                policy.AllowAnyMethod();
+                policy.AllowAnyOrigin();
+              });
+});
+
 if (app.Environment.IsDevelopment())
 {
   app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(CORS);
 
 app.UseAuthorization();
 

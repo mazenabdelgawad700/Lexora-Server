@@ -141,12 +141,16 @@ public class VocabularyEntryService : IVocabularyEntryService
     {
       var result = await _vocabularyEntryRepository.GetVocabularyEntriesPaginatedAsync(getDto);
 
-      if (!result.Succeeded || result.Data is null)
+      if (!result.Succeeded || result.Data.vocabularies is null)
         return ReturnBaseHandler.Failed<GetVocabularyEntriesPaginatedResponse>("Failed to retrieve vocabulary entries");
 
-      var entries = result.Data.ToList();
+      var entries = result.Data.vocabularies.ToList();
       var responses = entries.Select(e => MapEntityToResponse(e)).ToList();
-      var response = new GetVocabularyEntriesPaginatedResponse { VocabularyEntries = responses };
+      var response = new GetVocabularyEntriesPaginatedResponse
+      {
+        VocabularyEntries = responses,
+        TotalCount = result.Data.totalCount
+      };
 
       return ReturnBaseHandler.Success(response, "Vocabulary entries retrieved successfully");
     }

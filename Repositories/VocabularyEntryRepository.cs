@@ -46,7 +46,7 @@ public class VocabularyEntryRepository : IVocabularyEntryRepository
     }
   }
 
-  public async Task<ReturnBase<IQueryable<VocabularyEntry>>> GetVocabularyEntriesPaginatedAsync(GetVocabularyEntriesPaginatedDto getDto)
+  public async Task<ReturnBase<(IQueryable<VocabularyEntry> vocabularies, int totalCount)>> GetVocabularyEntriesPaginatedAsync(GetVocabularyEntriesPaginatedDto getDto)
   {
     try
     {
@@ -55,14 +55,14 @@ public class VocabularyEntryRepository : IVocabularyEntryRepository
       var entities = _vocabularyEntrySet.Skip(skipAmount).Take(getDto.PageSize).AsNoTracking();
 
       if (entities is null)
-        return ReturnBaseHandler.Failed<IQueryable<VocabularyEntry>>($"Can not get vocabularies!");
+        return ReturnBaseHandler.Failed<(IQueryable<VocabularyEntry>, int totalCount)>($"Can not get vocabularies!");
 
-      return ReturnBaseHandler.Success(entities);
+      return ReturnBaseHandler.Success((entities, _vocabularyEntrySet.Count()));
     }
     catch (Exception)
     {
       // TODO:: add logging
-      return ReturnBaseHandler.Failed<IQueryable<VocabularyEntry>>("Failed to get vocabularies");
+      return ReturnBaseHandler.Failed<(IQueryable<VocabularyEntry>, int totalCount)>("Failed to get vocabularies");
     }
   }
   public async Task<ReturnBase<VocabularyEntry>> GetVocabularyEntryByIdAsync(GetVocabularyEntryByIdDto getDto)
